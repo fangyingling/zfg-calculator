@@ -15,6 +15,15 @@
             max-width: 420px;
             margin: 0 auto;
         }
+        .app-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 -12px 16px -12px;
+            padding: 14px 12px;
+            background: #c40000;
+            color: #fff;
+        }
         .section {
             margin: 16px 0;
             padding: 12px;
@@ -33,6 +42,58 @@
         }
         .row label {
             flex: 1;
+        }
+        .drink-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            max-width: 100%;
+        }
+        .drink-controls .drink-sel {
+            flex: 1;
+            min-width: 0;
+            width: auto;
+            max-width: 200px;
+            text-align: left;
+            padding: 6px 8px;
+        }
+        .btn-add-drink {
+            padding: 8px 14px;
+            font-size: 14px;
+            border: 1px solid #c40000;
+            border-radius: 8px;
+            background: #fff;
+            color: #c40000;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-add-drink:active {
+            background: #fee2e2;
+        }
+        .drink-del {
+            font-size: 16px;
+            line-height: 1;
+            color: #666;
+        }
+        .drink-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin: 12px 0 8px;
+        }
+        .row.drink-row {
+            margin: 6px 0;
+        }
+        .row.drink-row .drink-controls {
+            flex: 1;
+            width: 100%;
+            max-width: 100%;
+        }
+        .drink-add-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin: 4px 0 2px;
         }
         input, select {
             width: 70px;
@@ -235,7 +296,7 @@
 </head>
 <body>
 
-<h1 style="text-align:center; font-size:22px;">朱富贵火锅计算器</h1>
+<h1 class="app-title">朱富贵火锅计算器</h1>
 
 <!-- 模式1 -->
 <div class="section">
@@ -263,6 +324,24 @@
             <input type="number" id="ren" value="0" min="0" step="1">
             <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('ren',1)">+</button>
         </div>
+    </div>
+
+    <div class="drink-title">饮料</div>
+    <div id="drink-rows-wrap">
+        <div class="row drink-row">
+            <div class="drink-controls">
+                <select class="drink-sel" title="选择饮料" aria-label="饮料种类"></select>
+                <div class="step-wrap">
+                    <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('drink-qty-0',-1)">−</button>
+                    <input type="number" class="drink-qty" id="drink-qty-0" value="0" min="0" step="1" aria-label="饮料数量">
+                    <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('drink-qty-0',1)">+</button>
+                </div>
+                <button type="button" class="step-btn drink-del" onclick="removeDrinkRow(this)" aria-label="删除本行" style="visibility:hidden">×</button>
+            </div>
+        </div>
+    </div>
+    <div class="drink-add-bar">
+        <button type="button" class="btn-add-drink" onclick="addDrinkRow()">＋ 添加饮料</button>
     </div>
 
     <h3>68折</h3>
@@ -361,6 +440,120 @@ function stepNum(id, delta) {
     el.value = String(v)
 }
 
+/** 模式1 饮料：名称与单价（元） */
+var DRINK_PRICES = [
+    { n: '玻璃瓶', p: 2 },
+    { n: '可乐/雪碧/芬达', p: 5 },
+    { n: '豆奶', p: 6 },
+    { n: '双柚汁', p: 6 },
+    { n: '王老吉', p: 6 },
+    { n: '健力宝', p: 6 },
+    { n: '番石榴', p: 6 },
+    { n: '维他茶', p: 6 },
+    { n: '椰子水', p: 7 },
+    { n: '乌龙茶', p: 7 },
+    { n: '好望水', p: 7 },
+    { n: '小椰汁', p: 7 },
+    { n: '百威', p: 8 },
+    { n: '喜力', p: 10 },
+    { n: '科罗纳', p: 10 },
+    { n: '福佳白', p: 10 },
+    { n: '蓝妹', p: 10 },
+    { n: '大椰汁', p: 20 }
+]
+
+var __drinkRowSeq = 0
+
+function getDrinkOptionsInnerHtml() {
+    var html = '<option value="">请选择</option>'
+    for (var i = 0; i < DRINK_PRICES.length; i++) {
+        var d = DRINK_PRICES[i]
+        html += '<option value="' + i + '">' + d.n + '（' + d.p + '）</option>'
+    }
+    return html
+}
+
+function fillAllDrinkSelects() {
+    var sels = document.querySelectorAll('#drink-rows-wrap .drink-sel')
+    for (var i = 0; i < sels.length; i++) {
+        var cur = sels[i].value
+        sels[i].innerHTML = getDrinkOptionsInnerHtml()
+        sels[i].value = cur
+    }
+}
+
+function updateDrinkDeleteButtons() {
+    var wrap = document.getElementById('drink-rows-wrap')
+    if (!wrap) return
+    var mult = wrap.querySelectorAll('.drink-row').length > 1
+    var dels = wrap.querySelectorAll('.drink-del')
+    for (var i = 0; i < dels.length; i++) {
+        dels[i].style.visibility = mult ? 'visible' : 'hidden'
+    }
+}
+
+function addDrinkRow() {
+    var wrap = document.getElementById('drink-rows-wrap')
+    if (!wrap) return
+    __drinkRowSeq++
+    var id = 'drink-qty-' + __drinkRowSeq
+    var row = document.createElement('div')
+    row.className = 'row drink-row'
+    row.innerHTML =
+        '<div class="drink-controls">' +
+        '<select class="drink-sel" title="选择饮料" aria-label="饮料种类">' +
+        getDrinkOptionsInnerHtml() +
+        '</select>' +
+        '<div class="step-wrap">' +
+        '<button type="button" class="step-btn" aria-label="减1" onclick="stepNum(\'' +
+        id +
+        '\',-1)">−</button>' +
+        '<input type="number" class="drink-qty" id="' +
+        id +
+        '" value="0" min="0" step="1" aria-label="饮料数量">' +
+        '<button type="button" class="step-btn" aria-label="加1" onclick="stepNum(\'' +
+        id +
+        '\',1)">+</button>' +
+        '</div>' +
+        '<button type="button" class="step-btn drink-del" onclick="removeDrinkRow(this)" aria-label="删除本行">×</button>' +
+        '</div>'
+    wrap.appendChild(row)
+    updateDrinkDeleteButtons()
+}
+
+function removeDrinkRow(btn) {
+    var wrap = document.getElementById('drink-rows-wrap')
+    if (!wrap || wrap.querySelectorAll('.drink-row').length <= 1) return
+    var row = btn.closest('.drink-row')
+    if (row && row.parentNode === wrap) {
+        row.parentNode.removeChild(row)
+    }
+    updateDrinkDeleteButtons()
+}
+
+/** 汇总饮料金额；每项 { name, price, qty, line } */
+function collectDrinkLines() {
+    var rows = document.querySelectorAll('#drink-rows-wrap .drink-row')
+    var total = 0
+    var parts = []
+    for (var i = 0; i < rows.length; i++) {
+        var sel = rows[i].querySelector('.drink-sel')
+        var qtyEl = rows[i].querySelector('.drink-qty')
+        if (!sel || !qtyEl) continue
+        if (sel.value === '') continue
+        var idx = parseInt(sel.value, 10)
+        if (!isFinite(idx) || idx < 0 || idx >= DRINK_PRICES.length) continue
+        var price = DRINK_PRICES[idx].p
+        var name = DRINK_PRICES[idx].n
+        var qty = intCount(qtyEl.value)
+        if (qty <= 0) continue
+        var sub = price * qty
+        total += sub
+        parts.push({ name: name, price: price, qty: qty, sub: sub })
+    }
+    return { total: total, parts: parts }
+}
+
 /** 人数≥1；两种锅底不同时为 0；普通+清汤=人数（清汤可不点，填 0 即可）。通过返回 null */
 function validatePotAndPeople(ren, pot1, pot2) {
     const r = intCount(ren)
@@ -428,6 +621,20 @@ function resetAll() {
     document.getElementById('prefer').value = 'none'
     document.getElementById('result1').innerHTML = ''
     document.getElementById('result2').innerHTML = ''
+    var drinkWrap = document.getElementById('drink-rows-wrap')
+    if (drinkWrap) {
+        while (drinkWrap.querySelectorAll('.drink-row').length > 1) {
+            drinkWrap.removeChild(drinkWrap.lastElementChild)
+        }
+        var firstDr = drinkWrap.querySelector('.drink-row')
+        if (firstDr) {
+            var ds = firstDr.querySelector('.drink-sel')
+            var dq = firstDr.querySelector('.drink-qty')
+            if (ds) ds.value = ''
+            if (dq) dq.value = 0
+        }
+        updateDrinkDeleteButtons()
+    }
 }
 
 // 模式1
@@ -442,6 +649,9 @@ function calcTotal() {
         return
     }
     const fixed = pot1 * 12 + pot2 * 6 + ren * 4
+    const drinkPack = collectDrinkLines()
+    const drinkTotal = drinkPack.total
+    const base = fixed + drinkTotal
 
     function plateCount(id) {
         return Math.max(0, +document.getElementById(id).value || 0)
@@ -465,15 +675,21 @@ function calcTotal() {
     const hu68 = n68_hu * 6.8
     const ho68 = n68_ho * 10.2
     const ti68 = n68_ti * 14.96
-    const total68 = fixed + lv68 + hu68 + ho68 + ti68
+    const total68 = base + lv68 + hu68 + ho68 + ti68
 
     const lv58 = n58_lv * 2.9
     const hu58 = n58_hu * 5.8
     const ho58 = n58_ho * 8.7
     const ti58 = n58_ti * 12.76
-    const total58 = fixed + lv58 + hu58 + ho58 + ti58
+    const total58 = base + lv58 + hu58 + ho58 + ti58
 
     const lines = ['固定费用: <b>' + fixed.toFixed(2) + '</b>']
+    if (drinkTotal > 0) {
+        var bits = drinkPack.parts.map(function (p) {
+            return p.name + '×' + p.qty + '=' + p.sub.toFixed(2)
+        })
+        lines.push('饮料: ' + bits.join('；') + ' 小计<b>' + drinkTotal.toFixed(2) + '</b>')
+    }
     if (!all68zero) lines.push('68折总计: <b>' + total68.toFixed(2) + '</b>')
     if (!all58zero) lines.push('58折总计: <b>' + total58.toFixed(2) + '</b>')
     document.getElementById('result1').innerHTML = lines.join('<br>')
@@ -907,6 +1123,7 @@ function onTargetMoneyBlur() {
     var list = document.querySelectorAll('input[type="number"]')
     for (var i = 0; i < list.length; i++) {
         if (list[i].id === 'target') continue
+        if (list[i].classList && list[i].classList.contains('drink-qty')) continue
         list[i].addEventListener('focus', onNumberFocusClearZero)
         list[i].addEventListener('blur', onNumberBlurNormalize)
     }
@@ -916,6 +1133,32 @@ function onTargetMoneyBlur() {
         tgt.addEventListener('blur', onTargetMoneyBlur)
     }
 })()
+
+;(function bindDrinkQtyDelegation() {
+    var w = document.getElementById('drink-rows-wrap')
+    if (!w) return
+    w.addEventListener(
+        'focus',
+        function (e) {
+            if (e.target.classList && e.target.classList.contains('drink-qty')) {
+                onNumberFocusClearZero.call(e.target, e)
+            }
+        },
+        true
+    )
+    w.addEventListener(
+        'blur',
+        function (e) {
+            if (e.target.classList && e.target.classList.contains('drink-qty')) {
+                onNumberBlurNormalize.call(e.target, e)
+            }
+        },
+        true
+    )
+})()
+
+fillAllDrinkSelects()
+updateDrinkDeleteButtons()
 </script>
 </body>
 </html>
