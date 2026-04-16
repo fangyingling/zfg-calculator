@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朱富贵火锅计算器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 12px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .section {
+            margin: 16px 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        h2 {
+            font-size: 18px;
+            margin: 0 0 8px;
+            color: #c40000;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+        }
+        .row label {
+            flex: 1;
+        }
+        input, select {
+            width: 70px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        /* 模式2：目标、锅底、人数、偏好 — 控件长宽一致 */
+        .section-mode2 .row input[type='number'],
+        .section-mode2 .row select {
+            width: 96px;
+            min-width: 96px;
+            max-width: 96px;
+            height: 38px;
+            padding: 6px 8px;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+        .section-mode2 input#target {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        .section-mode2 input#target::-webkit-outer-spin-button,
+        .section-mode2 input#target::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            cursor: pointer;
+            transition:
+                background-color 0.15s ease,
+                color 0.15s ease,
+                transform 0.08s ease,
+                box-shadow 0.15s ease;
+        }
+        /* 计算：绿色；按下时变灰反馈 */
+        .btn-calc {
+            background: #1a9b5c;
+            box-shadow: 0 2px 0 #147a49;
+        }
+        .btn-calc:hover {
+            background: #17b366;
+        }
+        .btn-calc:active {
+            background: #6b7280;
+            box-shadow: none;
+            transform: translateY(1px);
+        }
+        /* 重置：黄色；按下时变灰反馈 */
+        .btn-reset {
+            background: #e6b422;
+            color: #222;
+            box-shadow: 0 2px 0 #c9a010;
+        }
+        .btn-reset:hover {
+            background: #f0c94a;
+        }
+        .btn-reset:active {
+            background: #9ca3af;
+            color: #fff;
+            box-shadow: none;
+            transform: translateY(1px);
+        }
+        .btn:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+        .result {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        .result b {
+            color: #c40000;
+        }
+        .combo {
+            margin: 6px 0;
+        }
+        .hint {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.45;
+            margin: 0 0 10px;
+        }
+        .out-line {
+            font-size: 13px;
+            margin: 4px 0;
+        }
+        .out-h {
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0 4px;
+            font-size: 14px;
+        }
+        #app-toast {
+            position: fixed;
+            left: 50%;
+            bottom: max(24px, env(safe-area-inset-bottom, 0px));
+            transform: translateX(-50%) translateY(100px);
+            max-width: min(340px, calc(100vw - 24px));
+            padding: 12px 16px;
+            background: rgba(35, 35, 35, 0.94);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.45;
+            text-align: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            transition: opacity 0.28s ease, transform 0.28s ease;
+        }
+        #app-toast.toast-show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .plate-lv {
+            color: #148a3a;
+            font-weight: 600;
+        }
+        .plate-hu {
+            color: #b8860b;
+            font-weight: 600;
+        }
+        .plate-ho {
+            color: #c40000;
+            font-weight: 600;
+        }
+        .plate-ti {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<h1 style="text-align:center; font-size:22px;">朱富贵火锅计算器</h1>
+
+<!-- 模式1 -->
+<div class="section">
+    <h2>模式1：算总价（选锅底+盘子）</h2>
+    <p class="hint">先填<strong>人数</strong>，再填<strong>锅底</strong>：两种锅底<strong>个数相加要等于人数</strong>；只点一种锅时，另一种写 0。填好后再点「计算总价」。</p>
+    <div class="row">
+        <label>普通锅底（12）</label>
+        <input type="number" id="pot1" value="0" min="0" step="1" title="与清汤合计须等于人数">
+    </div>
+    <div class="row">
+        <label>清汤锅底（6，选填）</label>
+        <input type="number" id="pot2" value="0" min="0" step="1" title="不点清汤则填 0；与普通合计须等于人数">
+    </div>
+    <div class="row">
+        <label>人数（调料4/人）</label>
+        <input type="number" id="ren" value="0" min="0" step="1">
+    </div>
+
+    <h3>68折</h3>
+    <div class="row"><label class="plate-lv">绿3.4</label><input type="number" id="p68_lv" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-hu">黄6.8</label><input type="number" id="p68_hu" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-ho">红10.2</label><input type="number" id="p68_ho" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-ti">铁14.96</label><input type="number" id="p68_ti" value="0" min="0" step="1"></div>
+
+    <h3>58折</h3>
+    <div class="row"><label class="plate-lv">绿2.9</label><input type="number" id="p58_lv" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-hu">黄5.8</label><input type="number" id="p58_hu" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-ho">红8.7</label><input type="number" id="p58_ho" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-ti">铁12.76</label><input type="number" id="p58_ti" value="0" min="0" step="1"></div>
+
+    <button type="button" class="btn btn-calc" onclick="calcTotal()">计算总价</button>
+    <button type="button" class="btn btn-reset" onclick="resetAll()">一键重置</button>
+    <div class="result" id="result1"></div>
+</div>
+
+<!-- 模式2：预算反推 -->
+<div class="section section-mode2">
+    <h2>模式2：预算反推（每人都够吃 ±20）</h2>
+    <p class="hint">「目标总金额」为<strong>预计实付总价</strong>：<strong>可直接输入</strong>任意金额；输入时会出现 <strong>100、150、200…</strong> 联想（可点选）。默认为 0，点进会清空 0；框右侧<strong>无上下微调箭头</strong>。绿/黄/红/铁已是折后价，<strong>盘子额度 = 目标 − 固定</strong>。反推时每种盘全桌合计：<strong>至少 = 人数</strong>（每人至少 1），<strong>上限 ≈ 人数×5</strong>（封顶 65，可多于原先「每人 2 个」）；铁/黄/红/绿「多」偏好再放宽。</p>
+    <p class="hint">人数与锅底规则同上：<strong>相加等于人数</strong>，清汤可不点（填 0）。填好后再点「计算合理组合」。</p>
+    <datalist id="target-suggestions">
+        <option value="100"></option>
+        <option value="150"></option>
+        <option value="200"></option>
+        <option value="250"></option>
+        <option value="300"></option>
+        <option value="350"></option>
+        <option value="400"></option>
+        <option value="450"></option>
+        <option value="500"></option>
+        <option value="550"></option>
+        <option value="600"></option>
+        <option value="650"></option>
+        <option value="700"></option>
+        <option value="750"></option>
+        <option value="800"></option>
+        <option value="850"></option>
+        <option value="900"></option>
+        <option value="950"></option>
+        <option value="1000"></option>
+    </datalist>
+    <div class="row">
+        <label>目标总金额（实付）</label>
+        <input
+            type="number"
+            id="target"
+            value="0"
+            min="0"
+            step="1"
+            list="target-suggestions"
+            inputmode="numeric"
+            placeholder="手输或选"
+            aria-label="目标总金额实付"
+            autocomplete="off"
+        >
+    </div>
+    <div class="row">
+        <label>普通锅底</label>
+        <input type="number" id="pot1_2" value="0" min="0" step="1" title="与清汤合计须等于人数">
+    </div>
+    <div class="row">
+        <label>清汤锅底（选填）</label>
+        <input type="number" id="pot2_2" value="0" min="0" step="1" title="不点则填 0；与普通合计须等于人数">
+    </div>
+    <div class="row">
+        <label>人数</label>
+        <input type="number" id="ren_2" value="0" min="0" step="1">
+    </div>
+    <div class="row">
+        <label>搭配偏好</label>
+        <select id="prefer">
+            <option value="tie">铁盘多</option>
+            <option value="huang">黄盘多</option>
+            <option value="hong">红盘多</option>
+            <option value="lv">绿盘多</option>
+        </select>
+    </div>
+
+    <button type="button" class="btn btn-calc" onclick="calcCombo()">计算合理组合</button>
+    <button type="button" class="btn btn-reset" onclick="resetAll()">一键重置</button>
+    <div class="result" id="result2"></div>
+</div>
+
+<script>
+function intCount(v) {
+    const n = Math.floor(Number(v))
+    return !isFinite(n) || n < 0 ? 0 : n
+}
+
+/** 人数≥1；两种锅底不同时为 0；普通+清汤=人数（清汤可不点，填 0 即可）。通过返回 null */
+function validatePotAndPeople(ren, pot1, pot2) {
+    const r = intCount(ren)
+    const p1 = intCount(pot1)
+    const p2 = intCount(pot2)
+    if (r < 1 && p1 === 0 && p2 === 0) {
+        return '请先选择人数和锅底。'
+    }
+    if (r < 1) {
+        return '请先填写人数。'
+    }
+    if (p1 === 0 && p2 === 0) {
+        return '请选择锅底（普通或清汤至少填一种）。'
+    }
+    if (p1 + p2 !== r) {
+        return '请确认人数和锅底数是否正确。'
+    }
+    return null
+}
+
+/** 结果区：绿/黄/红/铁 着色字 + 数量 */
+function plateSeg(kind, count) {
+    const cls = { lv: 'plate-lv', hu: 'plate-hu', ho: 'plate-ho', ti: 'plate-ti' }
+    const name = { lv: '绿', hu: '黄', ho: '红', ti: '铁' }
+    return (
+        '<span class="' +
+        cls[kind] +
+        '">' +
+        name[kind] +
+        '</span>' +
+        count
+    )
+}
+
+var __toastTimer = null
+function showToast(text) {
+    var el = document.getElementById('app-toast')
+    if (!el) {
+        el = document.createElement('div')
+        el.id = 'app-toast'
+        document.body.appendChild(el)
+    }
+    el.textContent = text
+    el.classList.remove('toast-show')
+    void el.offsetWidth
+    el.classList.add('toast-show')
+    if (__toastTimer) clearTimeout(__toastTimer)
+    __toastTimer = setTimeout(function () {
+        el.classList.remove('toast-show')
+    }, 2600)
+}
+
+// 一键重置：所有数字输入为 0，偏好恢复默认，并清空两处计算结果
+function resetAll() {
+    const zeroIds = [
+        'pot1', 'pot2', 'ren',
+        'p68_lv', 'p68_hu', 'p68_ho', 'p68_ti',
+        'p58_lv', 'p58_hu', 'p58_ho', 'p58_ti',
+        'target', 'pot1_2', 'pot2_2', 'ren_2'
+    ]
+    zeroIds.forEach(function (id) {
+        var el = document.getElementById(id)
+        if (el) el.value = 0
+    })
+    document.getElementById('prefer').value = 'tie'
+    document.getElementById('result1').innerHTML = ''
+    document.getElementById('result2').innerHTML = ''
+}
+
+// 模式1
+function calcTotal() {
+    const pot1 = intCount(document.getElementById('pot1').value)
+    const pot2 = intCount(document.getElementById('pot2').value)
+    const ren = intCount(document.getElementById('ren').value)
+    const err1 = validatePotAndPeople(ren, pot1, pot2)
+    if (err1) {
+        showToast(err1)
+        document.getElementById('result1').innerHTML = ''
+        return
+    }
+    const fixed = pot1 * 12 + pot2 * 6 + ren * 4
+
+    function plateCount(id) {
+        return Math.max(0, +document.getElementById(id).value || 0)
+    }
+    const lv68 = plateCount('p68_lv') * 3.4
+    const hu68 = plateCount('p68_hu') * 6.8
+    const ho68 = plateCount('p68_ho') * 10.2
+    const ti68 = plateCount('p68_ti') * 14.96
+    const total68 = fixed + lv68 + hu68 + ho68 + ti68
+
+    const lv58 = plateCount('p58_lv') * 2.9
+    const hu58 = plateCount('p58_hu') * 5.8
+    const ho58 = plateCount('p58_ho') * 8.7
+    const ti58 = plateCount('p58_ti') * 12.76
+    const total58 = fixed + lv58 + hu58 + ho58 + ti58
+
+    document.getElementById('result1').innerHTML = `
+固定费用: <b>${fixed.toFixed(2)}</b><br>
+68折总计: <b>${total68.toFixed(2)}</b><br>
+58折总计: <b>${total58.toFixed(2)}</b>
+    `
+}
+
+// 模式2
+function calcCombo() {
+    const target = Math.max(0, +document.getElementById('target').value || 0)
+    const pot1 = intCount(document.getElementById('pot1_2').value)
+    const pot2 = intCount(document.getElementById('pot2_2').value)
+    const ren = intCount(document.getElementById('ren_2').value)
+    const prefer = document.getElementById('prefer').value
+    const fixed = pot1 * 12 + pot2 * 6 + ren * 4
+    const dishBudget = target - fixed
+    const tol68 = 20
+    const tol58Strict = 20
+
+    const err2 = validatePotAndPeople(ren, pot1, pot2)
+    if (err2) {
+        showToast(err2)
+        document.getElementById('result2').innerHTML = ''
+        return
+    }
+    if (target <= 0) {
+        showToast('请选择目标总金额。')
+        document.getElementById('result2').innerHTML = ''
+        return
+    }
+    if (dishBudget <= 0) {
+        showToast('目标金额偏低，请提高目标或调整锅底、人数后再试。')
+        document.getElementById('result2').innerHTML = ''
+        return
+    }
+
+    const p68 = [3.4, 6.8, 10.2, 14.96]
+    const p58 = [2.9, 5.8, 8.7, 12.76]
+
+    // 每种盘「全桌合计」：至少每人 1 个 → 下限 = ren；上限允许 > 原每人 2 个（ren*2），为 ren*PLATE_MAX_MULT 并加绝对封顶，避免人数很大时枚举过慢
+    const PLATE_MAX_MULT = 5
+    const maxPlateEach = Math.min(65, ren * PLATE_MAX_MULT)
+    const minLv = Math.max(1, ren)
+    const maxLv = maxPlateEach
+    const minHu = Math.max(1, ren)
+    const maxHu = maxPlateEach
+    const minHo = Math.max(1, ren)
+    const maxHo = maxPlateEach
+    const minTi = Math.max(1, ren)
+    const maxTi = maxPlateEach
+
+    // 偏好加成
+    function getRange(p) {
+        let mlv=minLv, Mlv=maxLv
+        let mhu=minHu, Mhu=maxHu
+        let mho=minHo, Mho=maxHo
+        let mti=minTi, Mti=maxTi
+        if (p === 'tie') {
+            Mti = Math.min(120, Math.floor(Mti * 1.5))
+        }
+        if (p === 'huang') {
+            Mhu = Math.min(120, Math.floor(Mhu * 1.5))
+        }
+        if (p === 'hong') {
+            Mho = Math.min(120, Math.floor(Mho * 1.5))
+        }
+        if (p === 'lv') {
+            Mlv = Math.min(120, Math.floor(Mlv * 1.5))
+        }
+        return [mlv, Mlv, mhu, Mhu, mho, Mho, mti, Mti]
+    }
+
+    function search(prices, p, tol) {
+        const [minLv, maxLv, minHu, maxHu, minHo, maxHo, minTi, maxTi] = getRange(p)
+        const list = []
+        const minS = dishBudget - tol
+        const maxS = dishBudget + tol
+        let feasibleMin = Infinity
+        let feasibleMax = -Infinity
+
+        for (let lv = minLv; lv <= maxLv; lv++) {
+            for (let hu = minHu; hu <= maxHu; hu++) {
+                for (let ho = minHo; ho <= maxHo; ho++) {
+                    for (let ti = minTi; ti <= maxTi; ti++) {
+                        const maxCnt = Math.max(lv, hu, ho, ti)
+                        const minCnt = Math.min(lv, hu, ho, ti)
+                        if (minCnt < 1 || maxCnt / minCnt > 3) continue
+
+                        const sum =
+                            lv * prices[0] +
+                            hu * prices[1] +
+                            ho * prices[2] +
+                            ti * prices[3]
+                        if (sum < feasibleMin) feasibleMin = sum
+                        if (sum > feasibleMax) feasibleMax = sum
+                        if (sum + 1e-6 >= minS && sum - 1e-6 <= maxS) {
+                            list.push({
+                                lv: lv,
+                                hu: hu,
+                                ho: ho,
+                                ti: ti,
+                                sum: sum,
+                                diff: Math.abs(sum - dishBudget),
+                                diffTotal: Math.abs(fixed + sum - target)
+                            })
+                        }
+                    }
+                }
+            }
+        }
+
+        if (feasibleMin === Infinity) {
+            feasibleMin = NaN
+            feasibleMax = NaN
+        }
+
+        list.sort(function (a, b) {
+            return a.diff - b.diff || a.sum - b.sum
+        })
+        const res = []
+        const seen = new Set()
+        for (let i = 0; i < list.length; i++) {
+            const x = list[i]
+            const k = x.lv + ',' + x.hu + ',' + x.ho + ',' + x.ti
+            if (!seen.has(k)) {
+                seen.add(k)
+                res.push(x)
+            }
+            if (res.length >= 4) break
+        }
+        return {
+            hits: res,
+            bandMin: minS,
+            bandMax: maxS,
+            feasibleMin: feasibleMin,
+            feasibleMax: feasibleMax,
+            tol: tol
+        }
+    }
+
+    /** 在规则内枚举全部合法盘数，按「含固定总价与目标的差距」取前几条（用于 58 折严格带内无解时的兜底） */
+    function closestByTotal(prices, p, limit) {
+        const [minLv, maxLv, minHu, maxHu, minHo, maxHo, minTi, maxTi] = getRange(p)
+        const list = []
+        for (let lv = minLv; lv <= maxLv; lv++) {
+            for (let hu = minHu; hu <= maxHu; hu++) {
+                for (let ho = minHo; ho <= maxHo; ho++) {
+                    for (let ti = minTi; ti <= maxTi; ti++) {
+                        const maxCnt = Math.max(lv, hu, ho, ti)
+                        const minCnt = Math.min(lv, hu, ho, ti)
+                        if (minCnt < 1 || maxCnt / minCnt > 3) continue
+                        const sum =
+                            lv * prices[0] +
+                            hu * prices[1] +
+                            ho * prices[2] +
+                            ti * prices[3]
+                        const total = fixed + sum
+                        list.push({
+                            lv: lv,
+                            hu: hu,
+                            ho: ho,
+                            ti: ti,
+                            sum: sum,
+                            diffTotal: Math.abs(total - target)
+                        })
+                    }
+                }
+            }
+        }
+        list.sort(function (a, b) {
+            return a.diffTotal - b.diffTotal || a.sum - b.sum
+        })
+        const out = []
+        const seen = new Set()
+        for (let i = 0; i < list.length; i++) {
+            const x = list[i]
+            const k = x.lv + ',' + x.hu + ',' + x.ho + ',' + x.ti
+            if (!seen.has(k)) {
+                seen.add(k)
+                out.push(x)
+            }
+            if (out.length >= limit) break
+        }
+        return out
+    }
+
+    let r68 = search(p68, prefer, tol68)
+    if (!r68.hits.length) {
+        const near68 = closestByTotal(p68, prefer, 4)
+        if (near68.length) {
+            r68 = {
+                hits: near68,
+                bandMin: r68.bandMin,
+                bandMax: r68.bandMax,
+                feasibleMin: r68.feasibleMin,
+                feasibleMax: r68.feasibleMax,
+                tol: tol68,
+                relaxed: true
+            }
+        }
+    }
+
+    let r58 = search(p58, prefer, tol58Strict)
+    if (!r58.hits.length) {
+        const near = closestByTotal(p58, prefer, 4)
+        if (near.length) {
+            r58 = {
+                hits: near,
+                bandMin: r58.bandMin,
+                bandMax: r58.bandMax,
+                feasibleMin: r58.feasibleMin,
+                feasibleMax: r58.feasibleMax,
+                tol: tol58Strict,
+                relaxed: true
+            }
+        }
+    }
+
+    function formatHits(shortTitle, pack) {
+        const hits = pack.hits
+        if (hits.length) {
+            let block = '<div class="out-h">' + shortTitle + '</div>'
+            if (pack.relaxed) {
+                block +=
+                    '<div class="out-line hint">±' +
+                    pack.tol +
+                    ' 内无匹配；下列为总价最接近目标的组合。</div>'
+            }
+            hits.forEach(function (x) {
+                const total = fixed + x.sum
+                const extra =
+                    pack.relaxed && typeof x.diffTotal === 'number'
+                        ? ' · 与目标差<b>' + x.diffTotal.toFixed(0) + '</b>'
+                        : ''
+                block +=
+                    '<div class="combo">' +
+                    plateSeg('lv', x.lv) +
+                    ' ' +
+                    plateSeg('hu', x.hu) +
+                    ' ' +
+                    plateSeg('ho', x.ho) +
+                    ' ' +
+                    plateSeg('ti', x.ti) +
+                    ' · 盘<b>' +
+                    x.sum.toFixed(0) +
+                    '</b> · 合计<b>' +
+                    total.toFixed(0) +
+                    '</b>' +
+                    extra +
+                    '</div>'
+            })
+            if (
+                pack.relaxed &&
+                hits[0] &&
+                typeof hits[0].diffTotal === 'number' &&
+                hits[0].diffTotal >= 80
+            ) {
+                const cap =
+                    !isNaN(pack.feasibleMax) && isFinite(pack.feasibleMax)
+                        ? fixed + pack.feasibleMax
+                        : fixed + hits[0].sum
+                block +=
+                    '<div class="out-line hint" style="margin-top:8px">说明：在您当前<strong>人数与规则</strong>下，本折整单总价<strong>最高大约 ' +
+                    cap.toFixed(0) +
+                    ' 元</strong>，远低于您填的目标，所以「最接近」只是在规则里<strong>尽量挑差距小的</strong>，仍会差很多。请<strong>加人数</strong>或<strong>把目标选低一些</strong>。</div>'
+            }
+            return block
+        }
+
+        const tolShown = typeof pack.tol === 'number' ? pack.tol : tol68
+        let msg = '<div class="out-h">' + shortTitle + '</div>'
+        msg +=
+            '<div class="out-line hint">无（需在盘子额度 <b>' +
+            dishBudget.toFixed(0) +
+            '</b> ±' +
+            tolShown +
+            ' 且满足规则）</div>'
+        if (!isNaN(pack.feasibleMin) && !isNaN(pack.feasibleMax)) {
+            msg +=
+                '<div class="out-line hint">规则下本折盘子约 <b>' +
+                pack.feasibleMin.toFixed(0) +
+                '～' +
+                pack.feasibleMax.toFixed(0) +
+                '</b>；需落在 <b>' +
+                pack.bandMin.toFixed(0) +
+                '～' +
+                pack.bandMax.toFixed(0) +
+                '</b>。</div>'
+            if (pack.feasibleMax < pack.bandMin - 1e-6) {
+                msg +=
+                    '<div class="out-line hint">当前<strong>人数偏少</strong>时天花板约 <b>' +
+                    pack.feasibleMax.toFixed(0) +
+                    '</b>，远低于盘子额度带下限，可调<strong>加人数</strong>或<strong>降目标</strong>。</div>'
+            }
+        }
+        return msg
+    }
+
+    let html =
+        '<div class="out-line">固定 <b>' +
+        fixed.toFixed(0) +
+        '</b> · 盘子额度 <b>' +
+        dishBudget.toFixed(0) +
+        '</b>（目标−固定，折后实付口径） · 匹配容差 ±' +
+        tol68 +
+        '</div>'
+
+    html += formatHits('68 折', r68)
+    html += formatHits('58 折', r58)
+
+    document.getElementById('result2').innerHTML = html
+}
+
+function onNumberFocusClearZero() {
+    var raw = String(this.value).trim()
+    if (raw === '' || raw === '0' || Number(raw) === 0) {
+        this.value = ''
+    }
+}
+
+function onNumberBlurNormalize() {
+    var v = String(this.value).trim()
+    if (v === '' || !isFinite(Number(v))) {
+        this.value = '0'
+        return
+    }
+    var t = Math.floor(Number(v))
+    if (!isFinite(t) || t < 0) {
+        this.value = '0'
+        return
+    }
+    this.value = String(t)
+}
+
+;(function bindZeroClearOnAllNumberInputs() {
+    var list = document.querySelectorAll('input[type="number"]')
+    for (var i = 0; i < list.length; i++) {
+        list[i].addEventListener('focus', onNumberFocusClearZero)
+        list[i].addEventListener('blur', onNumberBlurNormalize)
+    }
+})()
+</script>
+</body>
+</html>
