@@ -9,11 +9,16 @@
             box-sizing: border-box;
             font-family: system-ui, sans-serif;
         }
+        html {
+            background: #f6e8d6;
+        }
         body {
             margin: 0;
             padding: 12px;
             max-width: 420px;
             margin: 0 auto;
+            background: #f6e8d6;
+            color: #3d3833;
         }
         .app-title {
             text-align: center;
@@ -21,19 +26,60 @@
             font-weight: 700;
             margin: 0 -12px 16px -12px;
             padding: 14px 12px;
-            background: #c40000;
-            color: #fff;
+            background: #a92a2a;
+            color: #f6e8d6;
         }
         .section {
             margin: 16px 0;
             padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+            background: #fff;
+            border: 1px solid #e8e0d4;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(60, 40, 30, 0.06);
         }
         h2 {
             font-size: 18px;
             margin: 0 0 8px;
-            color: #c40000;
+            color: #a92a2a;
+        }
+        .discount-panel {
+            margin: 14px 0 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #ddd5c8;
+            background: #fff;
+            box-shadow: 0 1px 5px rgba(50, 40, 30, 0.05);
+        }
+        .discount-panel--68 {
+            border-color: #b8d4be;
+        }
+        .discount-panel--68 .discount-panel-body {
+            background: #f2faf4;
+        }
+        .discount-panel--68 .discount-banner {
+            background: linear-gradient(100deg, #256a42 0%, #3a8f5c 55%, #2d6a46 100%);
+            color: #fff;
+        }
+        .discount-panel--58 {
+            border-color: #dcc4a8;
+        }
+        .discount-panel--58 .discount-panel-body {
+            background: #fdf8f0;
+        }
+        .discount-panel--58 .discount-banner {
+            background: linear-gradient(100deg, #7a4f22 0%, #a56d32 50%, #8b5a28 100%);
+            color: #fff;
+        }
+        .discount-banner {
+            margin: 0;
+            padding: 10px 14px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-align: center;
+        }
+        .discount-panel-body {
+            padding: 6px 8px 10px;
         }
         .row {
             display: flex;
@@ -61,15 +107,15 @@
         .btn-add-drink {
             padding: 8px 14px;
             font-size: 14px;
-            border: 1px solid #c40000;
-            border-radius: 8px;
+            border: 1px solid #a92a2a;
+            border-radius: 10px;
             background: #fff;
-            color: #c40000;
+            color: #a92a2a;
             cursor: pointer;
             font-weight: 600;
         }
         .btn-add-drink:active {
-            background: #fee2e2;
+            background: #f5ebe8;
         }
         .drink-del {
             font-size: 16px;
@@ -79,7 +125,7 @@
         .drink-title {
             font-size: 16px;
             font-weight: 700;
-            color: #333;
+            color: #a92a2a;
             margin: 12px 0 8px;
         }
         .row.drink-row {
@@ -99,8 +145,10 @@
             width: 70px;
             padding: 6px;
             text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            border: 1px solid #dcd4c8;
+            border-radius: 8px;
+            background: #faf7f2;
+            color: #3d3833;
         }
         .step-wrap {
             display: flex;
@@ -113,10 +161,10 @@
             height: 36px;
             min-width: 36px;
             padding: 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background: #f3f4f6;
-            color: #222;
+            border: 1px solid #ddd5c8;
+            border-radius: 10px;
+            background: #f0ebe3;
+            color: #3d3833;
             font-size: 18px;
             font-weight: 600;
             line-height: 1;
@@ -125,7 +173,7 @@
             -webkit-tap-highlight-color: transparent;
         }
         .step-btn:active {
-            background: #e5e7eb;
+            background: #e2dcd2;
         }
         .step-wrap input[type='number'] {
             width: 64px;
@@ -192,54 +240,58 @@
                 transform 0.08s ease,
                 box-shadow 0.15s ease;
         }
-        /* 计算：绿色；按下时变灰反馈 */
+        /* 主操作：品牌酒红 */
         .btn-calc {
-            background: #1a9b5c;
-            box-shadow: 0 2px 0 #147a49;
+            background: #a92a2a;
+            box-shadow: 0 2px 0 #7a1f1f;
         }
         .btn-calc:hover {
-            background: #17b366;
+            background: #b83838;
         }
         .btn-calc:active {
-            background: #6b7280;
+            background: #8f2424;
             box-shadow: none;
             transform: translateY(1px);
         }
-        /* 重置：黄色；按下时变灰反馈 */
+        /* 次要操作：浅米灰 */
         .btn-reset {
-            background: #e6b422;
-            color: #222;
-            box-shadow: 0 2px 0 #c9a010;
+            background: #e8e0d4;
+            color: #4a4238;
+            box-shadow: 0 2px 0 #cfc5b8;
         }
         .btn-reset:hover {
-            background: #f0c94a;
+            background: #efe8de;
         }
         .btn-reset:active {
-            background: #9ca3af;
-            color: #fff;
+            background: #d4cdc2;
+            color: #3d3833;
             box-shadow: none;
             transform: translateY(1px);
         }
         .btn:focus-visible {
-            outline: 2px solid #2563eb;
+            outline: 2px solid #a92a2a;
             outline-offset: 2px;
         }
         .result {
             padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: #faf8f5;
+            border: 1px solid #ece6dc;
+            border-radius: 10px;
             margin-top: 10px;
             line-height: 1.6;
         }
+        .result:empty {
+            display: none;
+        }
         .result b {
-            color: #c40000;
+            color: #a92a2a;
         }
         .combo {
             margin: 6px 0;
         }
         .hint {
             font-size: 12px;
-            color: #555;
+            color: #6b6560;
             line-height: 1.45;
             margin: 0 0 10px;
         }
@@ -249,7 +301,7 @@
         }
         .out-h {
             font-weight: bold;
-            color: #333;
+            color: #a92a2a;
             margin: 10px 0 4px;
             font-size: 14px;
         }
@@ -285,7 +337,7 @@
             font-weight: 600;
         }
         .plate-ho {
-            color: #c40000;
+            color: #a92a2a;
             font-weight: 600;
         }
         .plate-ti {
@@ -344,17 +396,25 @@
         <button type="button" class="btn-add-drink" onclick="addDrinkRow()">＋ 添加饮料</button>
     </div>
 
-    <h3>68折</h3>
-    <div class="row"><label class="plate-lv">绿3.4</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_lv',-1)">−</button><input type="number" id="p68_lv" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_lv',1)">+</button></div></div>
-    <div class="row"><label class="plate-hu">黄6.8</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_hu',-1)">−</button><input type="number" id="p68_hu" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_hu',1)">+</button></div></div>
-    <div class="row"><label class="plate-ho">红10.2</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_ho',-1)">−</button><input type="number" id="p68_ho" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_ho',1)">+</button></div></div>
-    <div class="row"><label class="plate-ti">铁14.96</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_ti',-1)">−</button><input type="number" id="p68_ti" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_ti',1)">+</button></div></div>
+    <div class="discount-panel discount-panel--68">
+        <h3 class="discount-banner">68 折</h3>
+        <div class="discount-panel-body">
+            <div class="row"><label class="plate-lv">绿3.4</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_lv',-1)">−</button><input type="number" id="p68_lv" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_lv',1)">+</button></div></div>
+            <div class="row"><label class="plate-hu">黄6.8</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_hu',-1)">−</button><input type="number" id="p68_hu" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_hu',1)">+</button></div></div>
+            <div class="row"><label class="plate-ho">红10.2</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_ho',-1)">−</button><input type="number" id="p68_ho" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_ho',1)">+</button></div></div>
+            <div class="row"><label class="plate-ti">铁14.96</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_ti',-1)">−</button><input type="number" id="p68_ti" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_ti',1)">+</button></div></div>
+        </div>
+    </div>
 
-    <h3>58折</h3>
-    <div class="row"><label class="plate-lv">绿2.9</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_lv',-1)">−</button><input type="number" id="p58_lv" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_lv',1)">+</button></div></div>
-    <div class="row"><label class="plate-hu">黄5.8</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_hu',-1)">−</button><input type="number" id="p58_hu" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_hu',1)">+</button></div></div>
-    <div class="row"><label class="plate-ho">红8.7</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_ho',-1)">−</button><input type="number" id="p58_ho" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_ho',1)">+</button></div></div>
-    <div class="row"><label class="plate-ti">铁12.76</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_ti',-1)">−</button><input type="number" id="p58_ti" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_ti',1)">+</button></div></div>
+    <div class="discount-panel discount-panel--58">
+        <h3 class="discount-banner">58 折</h3>
+        <div class="discount-panel-body">
+            <div class="row"><label class="plate-lv">绿2.9</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_lv',-1)">−</button><input type="number" id="p58_lv" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_lv',1)">+</button></div></div>
+            <div class="row"><label class="plate-hu">黄5.8</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_hu',-1)">−</button><input type="number" id="p58_hu" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_hu',1)">+</button></div></div>
+            <div class="row"><label class="plate-ho">红8.7</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_ho',-1)">−</button><input type="number" id="p58_ho" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_ho',1)">+</button></div></div>
+            <div class="row"><label class="plate-ti">铁12.76</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_ti',-1)">−</button><input type="number" id="p58_ti" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_ti',1)">+</button></div></div>
+        </div>
+    </div>
 
     <button type="button" class="btn btn-calc" onclick="calcTotal()">计算总价</button>
     <button type="button" class="btn btn-reset" onclick="resetAll()">一键重置</button>
