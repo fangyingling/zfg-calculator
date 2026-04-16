@@ -186,7 +186,6 @@
 <!-- 模式1 -->
 <div class="section">
     <h2>模式1：算总价（选锅底+盘子）</h2>
-    <p class="hint">先填<strong>人数</strong>，再填<strong>锅底</strong>：两种锅底<strong>个数相加要等于人数</strong>；只点一种锅时，另一种写 0。填好后再点「计算总价」。</p>
     <div class="row">
         <label>普通锅底（12）</label>
         <input type="number" id="pot1" value="0" min="0" step="1" title="与清汤合计须等于人数">
@@ -220,8 +219,6 @@
 <!-- 模式2：预算反推 -->
 <div class="section section-mode2">
     <h2>模式2：预算反推（每人都够吃 ±20）</h2>
-    <p class="hint">「目标总金额」为<strong>预计实付总价</strong>：<strong>自行输入</strong>任意金额（支持小数，默认 0，点进会清空 0）。绿/黄/红/铁已是折后价，<strong>盘子额度 = 目标 − 固定</strong>。反推时每种盘<strong>全桌合计至少 1</strong>（可出现某种盘为 1 的组合），<strong>上限 ≈ 人数×5</strong>（封顶 65）。<strong>搭配偏好</strong>指该色盘数须<strong>严格多于</strong>另外三色；容差内若无解会<strong>临时去掉该条</strong>并加一行说明。</p>
-    <p class="hint">人数与锅底规则同上：<strong>相加等于人数</strong>，清汤可不点（填 0）。填好后再点「计算合理组合」。</p>
     <div class="row">
         <label>目标总金额（实付）</label>
         <input
