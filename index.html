@@ -41,8 +41,44 @@
             border: 1px solid #ccc;
             border-radius: 6px;
         }
-        /* 模式2：目标、锅底、人数、偏好 — 控件长宽一致 */
-        .section-mode2 .row input[type='number'],
+        .step-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .step-btn {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            padding: 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #f3f4f6;
+            color: #222;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .step-btn:active {
+            background: #e5e7eb;
+        }
+        .step-wrap input[type='number'] {
+            width: 64px;
+            min-width: 64px;
+            max-width: 64px;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        .step-wrap input[type='number']::-webkit-outer-spin-button,
+        .step-wrap input[type='number']::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* 模式2：偏好与步进框 */
         .section-mode2 .row select {
             width: 96px;
             min-width: 96px;
@@ -53,14 +89,32 @@
             flex-shrink: 0;
             box-sizing: border-box;
         }
-        .section-mode2 input#target {
+        .section-mode2 .row input#target {
+            width: 96px;
+            min-width: 96px;
+            max-width: 96px;
+            height: 38px;
+            padding: 6px 8px;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-sizing: border-box;
             -moz-appearance: textfield;
             appearance: textfield;
         }
-        .section-mode2 input#target::-webkit-outer-spin-button,
-        .section-mode2 input#target::-webkit-inner-spin-button {
+        .section-mode2 .row input#target::-webkit-outer-spin-button,
+        .section-mode2 .row input#target::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+        .section-mode2 .row .step-wrap input[type='number'] {
+            width: 58px;
+            min-width: 58px;
+            max-width: 58px;
+            height: 38px;
+            padding: 6px 4px;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-sizing: border-box;
         }
         .btn {
             width: 100%;
@@ -188,28 +242,40 @@
     <h2>模式1：算总价（选锅底+盘子）</h2>
     <div class="row">
         <label>普通锅底（12）</label>
-        <input type="number" id="pot1" value="0" min="0" step="1" title="与清汤合计须等于人数">
+        <div class="step-wrap">
+            <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('pot1',-1)">−</button>
+            <input type="number" id="pot1" value="0" min="0" step="1" title="与清汤合计须等于人数">
+            <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('pot1',1)">+</button>
+        </div>
     </div>
     <div class="row">
         <label>清汤锅底（6，选填）</label>
-        <input type="number" id="pot2" value="0" min="0" step="1" title="不点清汤则填 0；与普通合计须等于人数">
+        <div class="step-wrap">
+            <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('pot2',-1)">−</button>
+            <input type="number" id="pot2" value="0" min="0" step="1" title="不点清汤则填 0；与普通合计须等于人数">
+            <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('pot2',1)">+</button>
+        </div>
     </div>
     <div class="row">
         <label>人数（调料4/人）</label>
-        <input type="number" id="ren" value="0" min="0" step="1">
+        <div class="step-wrap">
+            <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('ren',-1)">−</button>
+            <input type="number" id="ren" value="0" min="0" step="1">
+            <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('ren',1)">+</button>
+        </div>
     </div>
 
     <h3>68折</h3>
-    <div class="row"><label class="plate-lv">绿3.4</label><input type="number" id="p68_lv" value="0" min="0" step="1"></div>
-    <div class="row"><label class="plate-hu">黄6.8</label><input type="number" id="p68_hu" value="0" min="0" step="1"></div>
-    <div class="row"><label class="plate-ho">红10.2</label><input type="number" id="p68_ho" value="0" min="0" step="1"></div>
-    <div class="row"><label class="plate-ti">铁14.96</label><input type="number" id="p68_ti" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-lv">绿3.4</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_lv',-1)">−</button><input type="number" id="p68_lv" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_lv',1)">+</button></div></div>
+    <div class="row"><label class="plate-hu">黄6.8</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_hu',-1)">−</button><input type="number" id="p68_hu" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_hu',1)">+</button></div></div>
+    <div class="row"><label class="plate-ho">红10.2</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_ho',-1)">−</button><input type="number" id="p68_ho" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_ho',1)">+</button></div></div>
+    <div class="row"><label class="plate-ti">铁14.96</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p68_ti',-1)">−</button><input type="number" id="p68_ti" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p68_ti',1)">+</button></div></div>
 
     <h3>58折</h3>
-    <div class="row"><label class="plate-lv">绿2.9</label><input type="number" id="p58_lv" value="0" min="0" step="1"></div>
-    <div class="row"><label class="plate-hu">黄5.8</label><input type="number" id="p58_hu" value="0" min="0" step="1"></div>
-    <div class="row"><label class="plate-ho">红8.7</label><input type="number" id="p58_ho" value="0" min="0" step="1"></div>
-    <div class="row"><label class="plate-ti">铁12.76</label><input type="number" id="p58_ti" value="0" min="0" step="1"></div>
+    <div class="row"><label class="plate-lv">绿2.9</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_lv',-1)">−</button><input type="number" id="p58_lv" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_lv',1)">+</button></div></div>
+    <div class="row"><label class="plate-hu">黄5.8</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_hu',-1)">−</button><input type="number" id="p58_hu" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_hu',1)">+</button></div></div>
+    <div class="row"><label class="plate-ho">红8.7</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_ho',-1)">−</button><input type="number" id="p58_ho" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_ho',1)">+</button></div></div>
+    <div class="row"><label class="plate-ti">铁12.76</label><div class="step-wrap"><button type="button" class="step-btn" aria-label="减1" onclick="stepNum('p58_ti',-1)">−</button><input type="number" id="p58_ti" value="0" min="0" step="1"><button type="button" class="step-btn" aria-label="加1" onclick="stepNum('p58_ti',1)">+</button></div></div>
 
     <button type="button" class="btn btn-calc" onclick="calcTotal()">计算总价</button>
     <button type="button" class="btn btn-reset" onclick="resetAll()">一键重置</button>
@@ -235,19 +301,32 @@
     </div>
     <div class="row">
         <label>普通锅底</label>
-        <input type="number" id="pot1_2" value="0" min="0" step="1" title="与清汤合计须等于人数">
+        <div class="step-wrap">
+            <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('pot1_2',-1)">−</button>
+            <input type="number" id="pot1_2" value="0" min="0" step="1" title="与清汤合计须等于人数">
+            <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('pot1_2',1)">+</button>
+        </div>
     </div>
     <div class="row">
         <label>清汤锅底（选填）</label>
-        <input type="number" id="pot2_2" value="0" min="0" step="1" title="不点则填 0；与普通合计须等于人数">
+        <div class="step-wrap">
+            <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('pot2_2',-1)">−</button>
+            <input type="number" id="pot2_2" value="0" min="0" step="1" title="不点则填 0；与普通合计须等于人数">
+            <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('pot2_2',1)">+</button>
+        </div>
     </div>
     <div class="row">
         <label>人数</label>
-        <input type="number" id="ren_2" value="0" min="0" step="1">
+        <div class="step-wrap">
+            <button type="button" class="step-btn" aria-label="减1" onclick="stepNum('ren_2',-1)">−</button>
+            <input type="number" id="ren_2" value="0" min="0" step="1">
+            <button type="button" class="step-btn" aria-label="加1" onclick="stepNum('ren_2',1)">+</button>
+        </div>
     </div>
     <div class="row">
         <label>搭配偏好</label>
         <select id="prefer">
+            <option value="none" selected>无偏好</option>
             <option value="tie">铁盘多</option>
             <option value="huang">黄盘多</option>
             <option value="hong">红盘多</option>
@@ -264,6 +343,22 @@
 function intCount(v) {
     const n = Math.floor(Number(v))
     return !isFinite(n) || n < 0 ? 0 : n
+}
+
+/** 除目标金额外，整数步进 ±1（受 min/max 约束） */
+function stepNum(id, delta) {
+    var el = document.getElementById(id)
+    if (!el || el.id === 'target') return
+    var mn = parseInt(el.getAttribute('min'), 10)
+    if (!isFinite(mn)) mn = 0
+    var mxAttr = el.getAttribute('max')
+    var mx = mxAttr !== null && mxAttr !== '' ? parseInt(mxAttr, 10) : Infinity
+    if (!isFinite(mx)) mx = Infinity
+    var v = intCount(el.value)
+    v += delta
+    if (v < mn) v = mn
+    if (v > mx) v = mx
+    el.value = String(v)
 }
 
 /** 人数≥1；两种锅底不同时为 0；普通+清汤=人数（清汤可不点，填 0 即可）。通过返回 null */
@@ -330,7 +425,7 @@ function resetAll() {
         var el = document.getElementById(id)
         if (el) el.value = 0
     })
-    document.getElementById('prefer').value = 'tie'
+    document.getElementById('prefer').value = 'none'
     document.getElementById('result1').innerHTML = ''
     document.getElementById('result2').innerHTML = ''
 }
@@ -458,6 +553,7 @@ function calcCombo() {
         return true
     }
     function prefStrictHint(pref) {
+        if (pref === 'none') return ''
         if (pref === 'tie') return '铁盘数多于绿、黄、红'
         if (pref === 'huang') return '黄盘数多于绿、红、铁'
         if (pref === 'hong') return '红盘数多于绿、黄、铁'
@@ -538,7 +634,7 @@ function calcCombo() {
                                 diffTotal: Math.abs(fixed + sum - target)
                             }
                             listLoose.push(o)
-                            if (plateStrictlyMost(lv, hu, ho, ti, pref)) {
+                            if (pref !== 'none' && plateStrictlyMost(lv, hu, ho, ti, pref)) {
                                 listStrict.push(o)
                             }
                         }
@@ -552,9 +648,9 @@ function calcCombo() {
             feasibleMax = NaN
         }
 
-        const useStrict = listStrict.length > 0
+        const useStrict = pref !== 'none' && listStrict.length > 0
         const list = useStrict ? listStrict : listLoose
-        const strictPrefDropped = !useStrict && listLoose.length > 0
+        const strictPrefDropped = pref !== 'none' && !useStrict && listLoose.length > 0
 
         list.sort(function (a, b) {
             return a.diff - b.diff || a.sum - b.sum
@@ -609,16 +705,16 @@ function calcCombo() {
                             diffTotal: Math.abs(total - target)
                         }
                         listLoose.push(o)
-                        if (plateStrictlyMost(lv, hu, ho, ti, pref)) {
+                        if (pref !== 'none' && plateStrictlyMost(lv, hu, ho, ti, pref)) {
                             listStrict.push(o)
                         }
                     }
                 }
             }
         }
-        const useStrict = listStrict.length > 0
+        const useStrict = pref !== 'none' && listStrict.length > 0
         const list = useStrict ? listStrict : listLoose
-        const strictPrefDropped = !useStrict && listLoose.length > 0
+        const strictPrefDropped = pref !== 'none' && !useStrict && listLoose.length > 0
         list.sort(function (a, b) {
             return a.diffTotal - b.diffTotal || a.sum - b.sum
         })
@@ -675,7 +771,7 @@ function calcCombo() {
         const hits = pack.hits
         if (hits.length) {
             let block = '<div class="out-h">' + shortTitle + '</div>'
-            if (pack.strictPrefDropped) {
+            if (pack.strictPrefDropped && prefer !== 'none') {
                 block +=
                     '<div class="out-line hint">「' +
                     prefStrictHint(prefer) +
